@@ -1,12 +1,12 @@
-import {types} from '@typegoose/typegoose';
+import {DocumentType, types} from '@typegoose/typegoose';
 import {inject, injectable} from 'inversify';
 import {Logger} from '../../libs/logger/index.js';
 import {Component} from '../../types/index.js';
+import {SortType} from '../../types/sortType.js';
 import {CreateRentOfferDto} from './dto/create-rent-offer.dto.js';
 import {PatchRentOfferDto} from './index.js';
 import {RentOfferService} from './rent-offer-service.interface.js';
 import {RentOfferEntity} from './rent-offer.entity.js';
-import { SortType } from '../../types/sortType.js';
 import { RentOffersLimit, RentOffersPremiumLimit } from './rent-offer.constans.js';
 
 
@@ -70,11 +70,11 @@ export class DefaultRentOfferService implements RentOfferService {
     return searchResult;
   }
 
-  public async delete(id: string): Promise<void> {
+  public async delete(id: string): Promise<types.DocumentType<RentOfferEntity> | null> {
     this.logger.info(`Try delete rent offer: ${id}`);
 
-    await this.rentOfferModel.deleteOne({id});
-    this.logger.info('Success delete');
+    return this.rentOfferModel.findOneAndDelete({id}).exec();
+
   }
 
   public async patch(rentOfferId: string, dto: PatchRentOfferDto): Promise<types.DocumentType<RentOfferEntity> | null> {
@@ -117,5 +117,19 @@ export class DefaultRentOfferService implements RentOfferService {
       .findByIdAndUpdate(offerId,
         {rating: (newRating + oldRating) / ratingsCount},
         {new: true});
+  }
+
+  public async incCommentCount(offerId: string): Promise<DocumentType<RentOfferEntity> | null> {
+    return this.rentOfferModel
+      .findByIdAndUpdate(offerId, {
+        '$inc': {
+          commentCount: 1,
+        }
+      }).exec();
+  }
+
+  public async exists(documentId: string): Promise<boolean> {
+    return (await this.rentOfferModel
+      .exists({_id: documentId})) !== null;
   }
 }

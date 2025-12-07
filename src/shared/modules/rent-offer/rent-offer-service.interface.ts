@@ -10,7 +10,7 @@ export interface RentOfferService {
 
   find(limit?: number): Promise<DocumentType<RentOfferEntity>[]>;
 
-  delete(id: string): Promise<void>;
+  delete(id: string): Promise<types.DocumentType<RentOfferEntity> | null>;
 
   findPremiumByCity(city: string): Promise<types.DocumentType<RentOfferEntity>[]>;
 
@@ -21,4 +21,8 @@ export interface RentOfferService {
   deleteFavorite(rentOfferId: string, userId: string): Promise<void>;
 
   calculateRating(oldRating: number, newRating: number, ratingsCount: number, offerId: string): Promise<void>;
+
+  incCommentCount(offerId: string): Promise<DocumentType<RentOfferEntity> | null>;
+
+  exists(documentId: string): Promise<boolean>;
 }
