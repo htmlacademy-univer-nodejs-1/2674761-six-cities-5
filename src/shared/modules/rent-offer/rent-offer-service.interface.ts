@@ -8,7 +8,7 @@ export interface RentOfferService {
 
   findById(id: string): Promise<DocumentType<RentOfferEntity> | null>;
 
-  find(limit: number): Promise<DocumentType<RentOfferEntity>[]>;
+  find(limit?: number): Promise<DocumentType<RentOfferEntity>[]>;
 
   delete(id: string): Promise<void>;
 
