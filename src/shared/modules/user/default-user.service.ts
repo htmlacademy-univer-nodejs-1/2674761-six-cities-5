@@ -5,6 +5,7 @@ import {Component} from '../../types/index.js';
 import {CreateUserDto} from './dto/create-user.dto.js';
 import {UserService} from './user-service.interface.js';
 import {UserEntity} from './user.entity.js';
+import {RentOfferEntity} from '../rent-offer/index.js';
 
 @injectable()
 export class DefaultUserService implements UserService {
@@ -40,5 +41,13 @@ export class DefaultUserService implements UserService {
     }
 
     return this.create(dto, salt);
+  }
+
+  public async findFavoriteOffers(userId: string): Promise<DocumentType<RentOfferEntity>[]> {
+    const result = await this.userModel.findById(userId).select('favorite').exec();
+    if (result === null) {
+      return [];
+    }
+    return this.userModel.find({_id: {$in: result.favoriteOffers}});
   }
 }

@@ -37,7 +37,7 @@ export function createRentOffer(offerData: string): RentOffer {
     createdDate: new Date(createdDate),
     city,
     previewImage,
-    housingPhoto,
+    housingPhoto: [housingPhoto],
     isPremium: isPremium.toLowerCase() === 'true',
     isFavorite: isFavorite.toLowerCase() === 'true',
     rating: Number.parseInt(rating, 10),

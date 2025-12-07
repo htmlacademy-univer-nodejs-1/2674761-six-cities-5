@@ -1,12 +1,12 @@
 {
   "api": {
     "titles": [
-      "title1",
-      "title2",
-      "title3",
-      "title4",
-      "title5",
-      "title6"
+      "title1title1",
+      "title2title2",
+      "title3title3",
+      "title4title4",
+      "title5title5",
+      "title6title6"
     ],
     "descriptions": [
       "descriptionsdescriptions1",
@@ -55,13 +55,25 @@
       "Towels",
       "Fridge"
     ],
-    "authors": [
-      "author1",
-      "author2",
-      "author3",
-      "author4",
-      "author5",
-      "author6"
+    "firstnames": [
+      "firstname1",
+      "firstname2",
+      "firstname3",
+      "firstname4",
+      "firstname5",
+      "firstname6"
+    ],
+    "avatarPaths": [
+      "avatarPath1",
+      "avatarPath2",
+      "avatarPath3",
+      "avatarPath4",
+      "avatarPath5",
+      "avatarPath6"
+    ],
+    "types": [
+      "usual",
+      "pro"
     ],
     "commentsCount": [
       "0"

@@ -56,12 +56,6 @@ paths:
       summary: Получение списка предложений по аренде
       description: Отдает список предлжожений по аренде
 
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-
       responses:
         "200":
           description: Информация о предложениях по аренде

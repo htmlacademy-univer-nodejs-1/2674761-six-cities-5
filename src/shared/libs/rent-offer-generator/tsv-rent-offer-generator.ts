@@ -1,8 +1,7 @@
 import dayjs from 'dayjs';
-
-import {RentOfferGenerator} from './rent-offer-generator.interface.js';
+import {generateRandomValue, getRandomItem, getRandomItems} from '../../helpers/index.js';
 import {HousingType, MockServerData} from '../../types/index.js';
-import { getRandomItem, generateRandomValue, getRandomItems } from '../../helpers/common.js';
+import {RentOfferGenerator} from './rent-offer-generator.interface.js';
 
 const MIN_RATING = 1;
 const MAX_RATING = 5;
@@ -30,14 +29,15 @@ export class TSVRentOfferGenerator implements RentOfferGenerator {
     const housingPhoto = getRandomItem<string>(this.mockData.housingPhotos);
     const cityWithCoordinates = getRandomItem<string>(this.mockData.citiesWithCoordinates);
     const isPremium = getRandomItem([true, false]);
-    const isFavorite = getRandomItem([true, false]);
     const rating = generateRandomValue(MIN_RATING, MAX_RATING).toString();
     const housingType = getRandomItem([HousingType.Apartment, HousingType.House, HousingType.Room, HousingType.Hotel]);
     const roomsCount = generateRandomValue(MIN_ROOMS_COUNT, MAX_ROOMS_COUNT).toString();
     const guestCount = generateRandomValue(MIN_GUEST_COUNT, MAX_GUEST_COUNT).toString();
     const price = generateRandomValue(MIN_PRICE, MAX_PRICE).toString();
     const conveniences = getRandomItems(this.mockData.conveniences).join(';');
-    const author = getRandomItem(this.mockData.authors);
+    const firstname = getRandomItem(this.mockData.firstnames);
+    const avatarPath = getRandomItem(this.mockData.avatarPaths);
+    const type = getRandomItem(this.mockData.types);
     const commentsCount = getRandomItem(this.mockData.commentsCount);
 
     const createdDate = dayjs()
@@ -50,8 +50,8 @@ export class TSVRentOfferGenerator implements RentOfferGenerator {
 
     return [
       title, description, createdDate, city, previewImage, housingPhoto,
-      isPremium, isFavorite, rating, housingType, roomsCount, guestCount,
-      price, conveniences, author, commentsCount, coordinates
+      isPremium, rating, housingType, roomsCount, guestCount,
+      price, conveniences, firstname, avatarPath, type, commentsCount, coordinates
     ].join('\t');
   }
 }

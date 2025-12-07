@@ -24,8 +24,8 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
   @prop({
     required: true,
     trim: true,
-    minlength: [20, 'Min length of title is 1'],
-    maxlength: [1024, 'Max length of title is 15']
+    minlength: [20, 'Min length of description is 1'],
+    maxlength: [1024, 'Max length of description is 15']
   })
     description: string;
 
@@ -47,7 +47,7 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
   @prop({
     required: true
   })
-    housingPhoto: string;
+    housingPhoto: string[];
 
   @prop({
     required: true
@@ -62,7 +62,8 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
   @prop({
     required: true,
     min: 1,
-    max: 5
+    max: 5,
+    default: 0
   })
     rating: number;
 
@@ -105,7 +106,9 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
   })
     authorId: Ref<UserEntity>;
 
-  @prop()
+  @prop({
+    default: 0
+  })
     commentsCount: number;
 
   @prop({

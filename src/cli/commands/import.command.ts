@@ -1,27 +1,20 @@
-import { getErrorMessage } from '../../shared/helpers/common.js';
-import { getMongoURI } from '../../shared/helpers/database.js';
-import { createRentOffer } from '../../shared/helpers/rent-offer.js';
-import { DatabaseClient } from '../../shared/libs/database-client/database-client.interface.js';
-import { MongoDatabaseClient } from '../../shared/libs/database-client/mongo.database-client.js';
-import { TSVFileReader } from '../../shared/libs/file-reader/tsv-file-reader.js';
-import { ConsoleLogger } from '../../shared/libs/logger/console.logger.js';
-import { Logger } from '../../shared/libs/logger/logger.interface.js';
-import { DefaultRentOfferService } from '../../shared/modules/rent-offer/default-rent-offer.service.js';
-import { RentOfferService } from '../../shared/modules/rent-offer/rent-offer-service.interface.js';
-import { RentOfferModel } from '../../shared/modules/rent-offer/rent-offer.entity.js';
-import { DefaultUserService } from '../../shared/modules/user/default-user.service.js';
-import { UserService } from '../../shared/modules/user/user-service.interface.js';
-import { UserModel } from '../../shared/modules/user/user.entity.js';
-import { RentOffer } from '../../shared/types/rental-offer.type.js';
-import { DEFAULT_DB_PORT, DEFAULT_USER_PASSWORD } from './command.constant.js';
-import { Command } from './command.interface.js';
-
+import {createRentOffer, getErrorMessage, getMongoURI} from '../../shared/helpers/index.js';
+import {DatabaseClient, MongoDatabaseClient} from '../../shared/libs/database-client/index.js';
+import {TSVFileReader} from '../../shared/libs/file-reader/tsv-file-reader.js';
+import {ConsoleLogger, Logger} from '../../shared/libs/logger/index.js';
+import {DefaultRentOfferService, RentOfferModel} from '../../shared/modules/rent-offer/index.js';
+import {RentOfferService} from '../../shared/modules/rent-offer/rent-offer-service.interface.js';
+import {DefaultUserService, UserModel} from '../../shared/modules/user/index.js';
+import {UserService} from '../../shared/modules/user/user-service.interface.js';
+import {RentOffer} from '../../shared/types/index.js';
+import {DEFAULT_DB_PORT, DEFAULT_USER_PASSWORD} from './command.constant.js';
+import {Command} from './command.interface.js';
 
 export class ImportCommand implements Command {
   private userService: UserService;
   private rentOfferService: RentOfferService;
   private databaseClient: DatabaseClient;
-  private logger: Logger;
+  private readonly logger: Logger;
   private salt: string;
 
   constructor() {
@@ -82,16 +75,16 @@ export class ImportCommand implements Command {
       previewImage: rentOffer.previewImage,
       housingPhoto: rentOffer.housingPhoto,
       isPremium: rentOffer.isPremium,
-      isFavorite: rentOffer.isFavorite,
-      rating: rentOffer.rating,
       housingType: rentOffer.housingType,
       roomsCount: rentOffer.roomsCount,
       guestsCount: rentOffer.guestsCount,
       price: rentOffer.price,
       conveniences: rentOffer.conveniences,
       authorId: user.id,
-      commentsCount: rentOffer.commentsCount,
-      coordinates: rentOffer.coordinates
+      coordinates: rentOffer.coordinates,
+      isFavorite: false,
+      rating: 0,
+      commentsCount: 0
     });
 
   }
