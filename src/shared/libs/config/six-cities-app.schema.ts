@@ -11,6 +11,7 @@ export type SixCitiesAppSchema = {
   DB_PASSWORD: string;
   DB_PORT: string;
   DB_NAME: string;
+  UPLOAD_DIRECTORY: string;
 }
 
 export const configSixCitiesAppSchema = convict<SixCitiesAppSchema>({
@@ -55,5 +56,11 @@ export const configSixCitiesAppSchema = convict<SixCitiesAppSchema>({
     format: String,
     env: 'DB_NAME',
     default: 'sixCitiesDb'
-  }
+  },
+  UPLOAD_DIRECTORY: {
+    doc: 'Directory for upload files',
+    format: String,
+    env: 'UPLOAD_DIRECTORY',
+    default: null
+  },
 });
