@@ -5,8 +5,8 @@ import {DatabaseClient} from '../shared/libs/database-client/index.js';
 import {Logger} from '../shared/libs/logger/index.js';
 import {Component} from '../shared/types/index.js';
 import express, {Express} from 'express';
-import { Controller, ExceptionFilter } from '../shared/libs/rest/index.js';
-
+import {Controller, ExceptionFilter} from '../shared/libs/rest/index.js';
+import {ParseTokenMiddleware} from '../shared/libs/rest/middleware/parse-token.middleware.js';
 
 @injectable()
 export class SixCitiesApplication {
@@ -19,13 +19,14 @@ export class SixCitiesApplication {
     @inject(Component.RentOfferController) private readonly rentOfferController: Controller,
     @inject(Component.ExceptionFilter) private readonly appExceptionFilter: ExceptionFilter,
     @inject(Component.UserController) private readonly userController: Controller,
+    @inject(Component.CommentController) private readonly commentController: Controller,
+    @inject(Component.SessionExceptionFilter) private readonly sessionExceptionFilter: ExceptionFilter,
   ) {
     this.server = express();
   }
 
   public async init() {
     this.logger.info('Six cities application initialization');
-
 
     this.logger.info('Init database…');
     await this._initDb();
@@ -56,17 +57,22 @@ export class SixCitiesApplication {
   private async _initControllers() {
     this.server.use('/rent-offers', this.rentOfferController.router);
     this.server.use('/users', this.userController.router);
+    this.server.use('/comments', this.commentController.router);
   }
 
   private async _initMiddleware() {
+    const authenticateMiddleware = new ParseTokenMiddleware(this.config.get('JWT_SECRET'));
+
     this.server.use(express.json());
     this.server.use(
       '/upload',
       express.static(this.config.get('UPLOAD_DIRECTORY'))
     );
+    this.server.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
   }
 
   private async _initExceptionFilters() {
+    this.server.use(this.sessionExceptionFilter.catch.bind(this.sessionExceptionFilter));
     this.server.use(this.appExceptionFilter.catch.bind(this.appExceptionFilter));
   }
 

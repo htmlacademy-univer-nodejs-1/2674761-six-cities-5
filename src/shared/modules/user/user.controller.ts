@@ -9,7 +9,7 @@ import {fillDTO} from '../../helpers/index.js';
 import {inject, injectable} from 'inversify';
 import {CreateUserRequest} from './create-user-request.js';
 import {LoginUserRequest} from './login-user-request.js';
-import { UserRdo } from './dto/user.rdo.js';
+import { UserRdo } from './rdo/user.rdo.js';
 
 @injectable()
 export class UserController extends BaseController {
