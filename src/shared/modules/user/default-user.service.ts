@@ -11,7 +11,8 @@ import {RentOfferEntity} from '../rent-offer/index.js';
 export class DefaultUserService implements UserService {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
-    @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>
+    @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>,
+    @inject(Component.RentOfferModel) private readonly rentOfferModel: types.ModelType<RentOfferEntity>,
   ) {
   }
 
@@ -30,7 +31,7 @@ export class DefaultUserService implements UserService {
   }
 
   public async findById(id: string): Promise<DocumentType<UserEntity> | null> {
-    return this.userModel.findById({id});
+    return this.userModel.findById(id);
   }
 
   public async findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
@@ -44,10 +45,33 @@ export class DefaultUserService implements UserService {
   }
 
   public async findFavoriteOffers(userId: string): Promise<DocumentType<RentOfferEntity>[]> {
-    const result = await this.userModel.findById(userId).select('favorite').exec();
-    if (result === null) {
+    this.logger.info(`Try find favorites for user ${userId}`);
+
+    const document = await this.userModel.findById(userId).select('favoriteOffers').exec();
+    if (!document) {
       return [];
     }
-    return this.userModel.find({_id: {$in: result.favoriteOffers}});
+
+    const rentOffers = await this.rentOfferModel.find({_id: {$in: document.favoriteOffers}});
+
+    for (const rentOffer of rentOffers) {
+      rentOffer.isFavorite = true;
+    }
+
+    return rentOffers;
+  }
+
+  public async addFavorite(offerId: string, userId: string): Promise<void> {
+    await this.userModel.updateOne(
+      {_id: userId},
+      {$addToSet: {favoriteOffers: offerId}}
+    );
+  }
+
+  public async deleteFavorite(offerId: string, userId: string): Promise<void> {
+    await this.userModel.updateOne(
+      {_id: userId},
+      {$pull: {favoriteOffers: offerId}}
+    );
   }
 }

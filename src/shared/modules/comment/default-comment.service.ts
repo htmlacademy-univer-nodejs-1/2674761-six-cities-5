@@ -2,12 +2,11 @@ import {types} from '@typegoose/typegoose';
 import {inject, injectable} from 'inversify';
 import {Logger} from '../../libs/logger/index.js';
 import {Component} from '../../types/index.js';
+import {SortType} from '../../types/sortType.js';
 import {CommentService} from './comment-service.interface.js';
 import {CommentEntity} from './comment.entity.js';
-import { SortType } from '../../types/sortType.js';
+import {CreateCommentDto} from './dto/create-comment.dto.js';
 import { CommentsLimit } from './comment.constans.js';
-import { CreateCommentDto } from './dto/create-comment.dto.js';
-
 
 @injectable()
 export class DefaultCommentService implements CommentService {
@@ -35,12 +34,18 @@ export class DefaultCommentService implements CommentService {
       .find({rentOfferId})
       .sort({createdAt: SortType.Down})
       .limit(CommentsLimit)
-      .populate('userId');
+      .populate('authorId');
 
     this.logger.info(`Find comments count=${result.length}`);
-
 
     return result;
   }
 
+  public async deleteByRentOfferId(rentOfferId: string): Promise<number> {
+    const result = await this.commentModel
+      .deleteMany({rentOfferId: rentOfferId})
+      .exec();
+
+    return result.deletedCount;
+  }
 }

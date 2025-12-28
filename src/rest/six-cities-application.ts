@@ -1,3 +1,4 @@
+import cors from 'cors';
 import {inject, injectable} from 'inversify';
 import {getMongoURI} from '../shared/helpers/index.js';
 import {Config, SixCitiesAppSchema} from '../shared/libs/config/index.js';
@@ -5,8 +6,8 @@ import {DatabaseClient} from '../shared/libs/database-client/index.js';
 import {Logger} from '../shared/libs/logger/index.js';
 import {Component} from '../shared/types/index.js';
 import express, {Express} from 'express';
-import {Controller, ExceptionFilter} from '../shared/libs/rest/index.js';
-import {ParseTokenMiddleware} from '../shared/libs/rest/middleware/parse-token.middleware.js';
+import {Controller, ExceptionFilter, } from '../shared/libs/rest/index.js';
+import { ParseTokenMiddleware } from '../shared/libs/rest/middleware/parse-token.middleware.js';
 
 @injectable()
 export class SixCitiesApplication {
@@ -42,7 +43,7 @@ export class SixCitiesApplication {
 
     this.logger.info('Init exception filters');
     await this._initExceptionFilters();
-    this.logger.info('Exception filters initialization compleated');
+    this.logger.info('Exception filters initialization completed');
 
     this.logger.info('Try to init server…');
     await this._initServer();
@@ -69,6 +70,7 @@ export class SixCitiesApplication {
       express.static(this.config.get('UPLOAD_DIRECTORY'))
     );
     this.server.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
+    this.server.use(cors());
   }
 
   private async _initExceptionFilters() {

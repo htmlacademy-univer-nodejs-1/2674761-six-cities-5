@@ -12,7 +12,6 @@ import { RentOffersLimit, RentOffersPremiumLimit } from './rent-offer.constans.j
 
 @injectable()
 export class DefaultRentOfferService implements RentOfferService {
-
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
     @inject(Component.RentOfferModel) private readonly rentOfferModel: types.ModelType<RentOfferEntity>
@@ -30,7 +29,7 @@ export class DefaultRentOfferService implements RentOfferService {
 
   public async findById(id: string): Promise<types.DocumentType<RentOfferEntity> | null> {
     this.logger.info(`Try find rent offer with id=${id}`);
-    const searchResult = await this.rentOfferModel.findById({id});
+    const searchResult = await this.rentOfferModel.findById(id).populate('authorId').exec();
     if (searchResult) {
       this.logger.info(`Success find rent offer with id=${id}`);
     }
@@ -43,22 +42,6 @@ export class DefaultRentOfferService implements RentOfferService {
 
     const searchResult = await this.rentOfferModel
       .aggregate([
-        {
-          $lookup: {
-            from: 'comments',
-            let: {rentOfferId: '$_id'},
-            pipeline: [
-              {$match: {$expr: {$in: ['$$rentOfferId', '$rentOffers']}}},
-              {$project: {_id: 1}}
-            ],
-            as: 'comments'
-          }
-        },
-        {
-          $addFields:
-            {id: {$toString: '$_id'}, commentCount: {$size: '$comments'}}
-        },
-        {$unset: 'comments'},
         {$limit: limit},
         {$sort: {offerCount: SortType.Down}}
       ]);
@@ -70,11 +53,10 @@ export class DefaultRentOfferService implements RentOfferService {
     return searchResult;
   }
 
-  public async delete(id: string): Promise<types.DocumentType<RentOfferEntity> | null> {
-    this.logger.info(`Try delete rent offer: ${id}`);
+  public async delete(rentOfferId: string): Promise<types.DocumentType<RentOfferEntity> | null> {
+    this.logger.info(`Try delete rent offer: ${rentOfferId}`);
 
-    return this.rentOfferModel.findOneAndDelete({id}).exec();
-
+    return this.rentOfferModel.findOneAndDelete({_id: rentOfferId}).exec();
   }
 
   public async patch(rentOfferId: string, dto: PatchRentOfferDto): Promise<types.DocumentType<RentOfferEntity> | null> {
@@ -98,34 +80,34 @@ export class DefaultRentOfferService implements RentOfferService {
     return result;
   }
 
-  public async addFavorite(offerId: string, userId: string): Promise<void> {
-    await this.rentOfferModel.updateOne(
-      {_id: userId},
-      {$addToSet: {favorites: offerId}}
-    );
-  }
+  public async addComment(rentOfferId: string, rating: number): Promise<DocumentType<RentOfferEntity> | null> {
+    this.logger.info(`Add comment for rentOfferId=${rentOfferId}`);
 
-  public async deleteFavorite(offerId: string, userId: string): Promise<void> {
-    await this.rentOfferModel.updateOne(
-      {_id: userId},
-      {$pull: {favorites: offerId}}
-    );
-  }
-
-  public async calculateRating(oldRating: number, newRating: number, ratingsCount: number, offerId: string): Promise<void> {
-    await this.rentOfferModel
-      .findByIdAndUpdate(offerId,
-        {rating: (newRating + oldRating) / ratingsCount},
-        {new: true});
-  }
-
-  public async incCommentCount(offerId: string): Promise<DocumentType<RentOfferEntity> | null> {
-    return this.rentOfferModel
-      .findByIdAndUpdate(offerId, {
+    const rentOffer = await this.rentOfferModel
+      .findByIdAndUpdate(rentOfferId, {
         '$inc': {
-          commentCount: 1,
+          commentsCount: 1,
         }
       }).exec();
+
+    if (!rentOffer) {
+      this.logger.warn('Fail add comment');
+      return rentOffer;
+    }
+
+    await this.calculateRating(rentOffer.rating, rating, rentOffer.commentsCount + 1, rentOfferId);
+
+    return rentOffer;
+  }
+
+  public async calculateRating(oldRating: number, newRating: number, ratingsCount: number, rentOfferId: string): Promise<void> {
+    let rating = (newRating + (oldRating * (ratingsCount - 1))) / ratingsCount;
+    rating = Math.round(10 * rating) / 10;
+
+    await this.rentOfferModel
+      .findByIdAndUpdate(rentOfferId,
+        {rating: rating},
+        {new: true});
   }
 
   public async exists(documentId: string): Promise<boolean> {

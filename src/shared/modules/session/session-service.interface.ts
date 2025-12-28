@@ -1,9 +1,8 @@
-import {CreateSessionDto} from './dto/create-session.dto.js';
+import {UserEntity} from '../user/index.js';
+import {LoginUserDto} from '../user/dto/login-user.dto.js';
 
 export interface SessionService {
-  create(dto: CreateSessionDto): Promise<string>;
+  authenticate(user: UserEntity): Promise<string>;
 
-  existById(id: string): Promise<boolean>;
-
-  deleteById(id: string): Promise<void>
+  verify(dto: LoginUserDto): Promise<UserEntity>;
 }

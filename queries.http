@@ -1,3 +1,0 @@
-# Get mock data
-GET http://localhost:5000/api HTTP/1.1
-

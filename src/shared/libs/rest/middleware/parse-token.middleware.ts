@@ -2,21 +2,15 @@ import {NextFunction, Request, Response} from 'express';
 import {jwtVerify} from 'jose';
 import {StatusCodes} from 'http-status-codes';
 import {createSecretKey} from 'node:crypto';
+import {Middleware} from './middleware.interface.js';
 import {HttpError} from '../errors/index.js';
-import { Middleware } from './validate-id.js';
-
-export type TokenPayload = {
-  email: string;
-  firstname: string;
-  id: string;
-};
+import {TokenPayload} from '../../../modules/session/index.js';
 
 function isTokenPayload(payload: unknown): payload is TokenPayload {
   return (
     (typeof payload === 'object' && payload !== null) &&
     ('email' in payload && typeof payload.email === 'string') &&
     ('firstname' in payload && typeof payload.firstname === 'string') &&
-    ('lastname' in payload && typeof payload.lastname === 'string') &&
     ('id' in payload && typeof payload.id === 'string')
   );
 }
@@ -41,7 +35,6 @@ export class ParseTokenMiddleware implements Middleware {
         return next();
       }
     } catch {
-
       return next(new HttpError(
         StatusCodes.UNAUTHORIZED,
         'Invalid token',

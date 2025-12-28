@@ -1,10 +1,8 @@
+import {Middleware} from './middleware.interface.js';
 import {NextFunction, Request, Response} from 'express';
 import {HttpError} from '../errors/index.js';
 import {StatusCodes} from 'http-status-codes';
-import { Middleware } from './validate-id.js';
-export interface DocumentExists {
-  exists(documentId: string): Promise<boolean>;
-}
+import {DocumentExists} from '../../../types/index.js';
 
 export class DocumentExistsMiddleware implements Middleware {
   constructor(
