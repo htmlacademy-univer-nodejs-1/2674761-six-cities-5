@@ -23,7 +23,7 @@ export class ImportCommand implements Command {
 
     this.logger = new ConsoleLogger();
     this.rentOfferService = new DefaultRentOfferService(this.logger, RentOfferModel);
-    this.userService = new DefaultUserService(this.logger, UserModel);
+    this.userService = new DefaultUserService(this.logger, UserModel, RentOfferModel);
     this.databaseClient = new MongoDatabaseClient(this.logger);
   }
 
@@ -81,10 +81,7 @@ export class ImportCommand implements Command {
       price: rentOffer.price,
       conveniences: rentOffer.conveniences,
       authorId: user.id,
-      coordinates: rentOffer.coordinates,
-      isFavorite: false,
-      rating: 0,
-      commentsCount: 0
+      coordinates: rentOffer.coordinates
     });
 
   }

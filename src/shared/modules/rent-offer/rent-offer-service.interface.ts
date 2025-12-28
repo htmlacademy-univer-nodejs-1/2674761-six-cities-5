@@ -1,9 +1,10 @@
 import {DocumentType, types} from '@typegoose/typegoose';
 import {CreateRentOfferDto} from './dto/create-rent-offer.dto.js';
+import {PatchRentOfferDto} from './dto/patch-rent-offer.dto.js';
 import {RentOfferEntity} from './rent-offer.entity.js';
-import { PatchRentOfferDto } from './index.js';
+import {DocumentExists} from '../../types/index.js';
 
-export interface RentOfferService {
+export interface RentOfferService extends DocumentExists {
   create(dto: CreateRentOfferDto): Promise<DocumentType<RentOfferEntity>>;
 
   findById(id: string): Promise<DocumentType<RentOfferEntity> | null>;
@@ -16,13 +17,9 @@ export interface RentOfferService {
 
   patch(rentOfferId: string, dto: PatchRentOfferDto): Promise<types.DocumentType<RentOfferEntity> | null>;
 
-  addFavorite(rentOfferId: string, userId: string): Promise<void>;
-
-  deleteFavorite(rentOfferId: string, userId: string): Promise<void>;
-
   calculateRating(oldRating: number, newRating: number, ratingsCount: number, offerId: string): Promise<void>;
 
-  incCommentCount(offerId: string): Promise<DocumentType<RentOfferEntity> | null>;
+  addComment(rentOfferId: string, rating: number): Promise<DocumentType<RentOfferEntity> | null>;
 
   exists(documentId: string): Promise<boolean>;
 }

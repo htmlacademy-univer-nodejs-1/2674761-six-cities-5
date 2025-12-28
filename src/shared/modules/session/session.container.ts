@@ -1,14 +1,13 @@
-import {types} from '@typegoose/typegoose';
 import {Container} from 'inversify';
 import {Component} from '../../types/index.js';
 import {DefaultSessionService} from './default-session.service.js';
 import {SessionService} from './session-service.interface.js';
-import {SessionEntity, SessionModel} from './session.entity.js';
+import {SessionExceptionFilter} from './session.exception.js';
+import {ExceptionFilter} from '../../libs/rest/index.js';
 
 export function createSessionContainer() {
-  const userContainer = new Container();
-  userContainer.bind<SessionService>(Component.SessionService).to(DefaultSessionService).inSingletonScope();
-  userContainer.bind<types.ModelType<SessionEntity>>(Component.SessionModel).toConstantValue(SessionModel);
-
-  return userContainer;
+  const sessionContainer = new Container();
+  sessionContainer.bind<SessionService>(Component.SessionService).to(DefaultSessionService).inSingletonScope();
+  sessionContainer.bind<ExceptionFilter>(Component.SessionExceptionFilter).to(SessionExceptionFilter).inSingletonScope();
+  return sessionContainer;
 }

@@ -55,14 +55,13 @@ export class RentOfferEntity extends defaultClasses.TimeStamps {
     isPremium: boolean;
 
   @prop({
-    required: true
+    required: true,
+    default: false
   })
     isFavorite: boolean;
 
   @prop({
     required: true,
-    min: 1,
-    max: 5,
     default: 0
   })
     rating: number;

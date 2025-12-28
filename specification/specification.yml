@@ -73,19 +73,19 @@ paths:
       summary: Получить детальную информацию о предложении
       description: Отдает полную информацию о предложении по аренде
 
-    parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
 
-    responses:
-      "200":
-        description: Подробная инфорамция предложении по аренде
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/rentOfferResponse'
+      responses:
+        "200":
+          description: Подробная инфорамция предложении по аренде
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rentOfferResponse'
 
     patch:
       tags:
@@ -166,6 +166,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/commentResponse'
+
+  /comments:
     post:
       tags:
         - rent-offers
@@ -295,26 +297,6 @@ paths:
         "403":
           description: Сессия невалидна
 
-  /users/logout:
-    post:
-      tags:
-        - users
-      summary: Выход из аккаунта
-      description: Выход из аккаунта пользователя
-      parameters:
-        - in: header
-          name: AuthToken
-          required: true
-          schema:
-            $ref: '#/components/schemas/authToken'
-
-      responses:
-        "200":
-          description: Пользователь успешно вышел
-
-        "404":
-          description: Сессия не найдена
-
   /users/favorite:
     post:
       tags:
@@ -394,7 +376,7 @@ components:
             - usual
             - pro
 
-      required: [ email, firstname, password, type ]
+      required: [ email, firstname, password, types ]
 
     user:
       type: object
@@ -418,7 +400,7 @@ components:
             - usual
             - pro
 
-      required: [ email, firstname, avatarPath, type ]
+      required: [ email, firstname, avatarPath, types ]
 
     loginUser:
       type: object
